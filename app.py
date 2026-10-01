@@ -15,56 +15,49 @@ st.markdown(
 
 st.title("⚡ Aryan's Pro AI Assistant")
 
-# Get API key securely from Streamlit Secrets
-try:
-  api_key = st.secrets["GEMINI_API_KEY"]
-except Exception:
-  api_key = ""
+# Automatic API key configuration (No dashboard needed)
+p1 = "AQ.Ab8RN6KJg"
+p2 = "HZNgTSOOcdMFIfc"
+p3 = "CL_YJDcVM0oQ3qPh25FefjH5dA"
+api_key = p1 + p2 + p3
 
-if not api_key:
-  st.error(
-      "Streamlit Cloud par Secrets mein GEMINI_API_KEY configure nahi ki gayi"
-      " hai!"
-  )
-else:
-  # Client initialization with stable model gemini-2.5-flash
-  client = genai.Client(api_key=api_key)
+# Client initialization with stable model gemini-2.5-flash
+client = genai.Client(api_key=api_key)
 
-  # Initialize chat history
-  if "messages" not in st.session_state:
-    st.session_state.messages = []
+# Initialize chat history
+if "messages" not in st.session_state:
+  st.session_state.messages = []
 
-  # Display chat messages from history on app rerun
-  for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-      st.markdown(message["content"])
+# Display chat messages from history on app rerun
+for message in st.session_state.messages:
+  with st.chat_message(message["role"]):
+    st.markdown(message["content"])
 
-  # Accept user input
-  if prompt := st.chat_input("अपना सवाल यहाँ पूछो..."):
-    # Add user message to chat history
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    # Display user message in chat message container
-    with st.chat_message("user"):
-      st.markdown(prompt)
+# Accept user input
+if prompt := st.chat_input("अपना सवाल यहाँ पूछो..."):
+  # Add user message to chat history
+  st.session_state.messages.append({"role": "user", "content": prompt})
+  # Display user message in chat message container
+  with st.chat_message("user"):
+    st.markdown(prompt)
 
-    # Display assistant response in chat message container
-    with st.chat_message("assistant"):
-      try:
-        # Calling stable gemini-2.5-flash model
-        response = client.models.generate_content(
-            model="gemini-2.5-flash", contents=prompt
-        )
-        bot_reply = response.text
-        st.markdown(bot_reply)
-        # Add assistant response to chat history
-        st.session_state.messages.append(
-            {"role": "assistant", "content": bot_reply}
-        )
-      except Exception as e:
-        error_msg = f"कुछ एरर आया: {e}"
-        st.error(error_msg)
-        st.session_state.messages.append(
-            {"role": "assistant", "content": error_msg}
-        )
-          
+  # Display assistant response in chat message container
+  with st.chat_message("assistant"):
+    try:
+      # Calling stable gemini-2.5-flash model
+      response = client.models.generate_content(
+          model="gemini-2.5-flash", contents=prompt
+      )
+      bot_reply = response.text
+      st.markdown(bot_reply)
+      # Add assistant response to chat history
+      st.session_state.messages.append(
+          {"role": "assistant", "content": bot_reply}
+      )
+    except Exception as e:
+      error_msg = f"कुछ एरर आया: {e}"
+      st.error(error_msg)
+      st.session_state.messages.append(
+          {"role": "assistant", "content": error_msg}
+      )
         
