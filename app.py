@@ -15,18 +15,19 @@ st.markdown(
 
 st.title("⚡ Aryan's Pro AI Assistant")
 
-# Sidebar API Key configuration
-with st.sidebar:
-  st.subheader("Configuration")
-  api_key = st.text_input("अपनी जेमिनी एपीआई की यहाँ डालें:", type="password")
-  st.markdown("[एपीआई की यहाँ से फ्री में लें](https://aistudio.google.com)")
+# Get API key securely from Streamlit Secrets
+try:
+  api_key = st.secrets["GEMINI_API_KEY"]
+except Exception:
+  api_key = ""
 
 if not api_key:
-  st.warning(
-      "कृपया आगे बात करने के लिए साइडबार में अपनी Gemini API Key दर्ज करें।"
+  st.error(
+      "Streamlit Cloud par Secrets mein GEMINI_API_KEY configure nahi ki gayi"
+      " hai!"
   )
 else:
-  # Client initialization with updated model gemini-3.8-flash
+  # Client initialization with stable model gemini-2.5-flash
   client = genai.Client(api_key=api_key)
 
   # Initialize chat history
@@ -49,9 +50,9 @@ else:
     # Display assistant response in chat message container
     with st.chat_message("assistant"):
       try:
-        # Calling gemini-3.8-flash model
+        # Calling stable gemini-2.5-flash model
         response = client.models.generate_content(
-            model="gemini-3.8-flash", contents=prompt
+            model="gemini-2.5-flash", contents=prompt
         )
         bot_reply = response.text
         st.markdown(bot_reply)
@@ -65,4 +66,5 @@ else:
         st.session_state.messages.append(
             {"role": "assistant", "content": error_msg}
         )
+          
         
