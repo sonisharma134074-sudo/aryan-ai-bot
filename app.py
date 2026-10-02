@@ -1,6 +1,9 @@
+from io import BytesIO
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 import streamlit as st
 
-# Page configuration with modern student-centric title
+# Page configuration
 st.set_page_config(
     page_title="Aryan's Student Pro AI Assistant",
     page_icon="🎓",
@@ -8,54 +11,75 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# Custom CSS Styling to make the app look extremely professional, clean, and beautiful
+# Custom CSS Styling with Stunning Milky Way Galaxy Theme, Stars, and Cosmic Look
 st.markdown(
     """
     <style>
-    /* Main background and font styling */
+    /* Milky Way Galaxy & Deep Space Background */
     .stApp {
-        background-color: #f8f9fa;
+        background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+        color: #ffffff;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-    
-    /* Header styling */
-    .main-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 25px;
-        border-radius: 15px;
+
+    /* Gorgeous Galaxy Header with Nebula Background */
+    .galaxy-header {
+        background: linear-gradient(135deg, rgba(30, 27, 75, 0.85) 0%, rgba(76, 29, 149, 0.85) 100%), 
+                    url('https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=1200&q=80');
+        background-size: cover;
+        background-position: center;
+        padding: 30px;
+        border-radius: 20px;
         color: white;
         text-align: center;
         margin-bottom: 25px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        border: 1px solid rgba(255, 255, 255, 0.18);
     }
-    .main-header h1 {
-        font-size: 2.2rem;
-        margin-bottom: 5px;
-        font-weight: 700;
+    
+    .galaxy-header h1 {
+        font-size: 2.3rem;
+        margin-bottom: 8px;
+        font-weight: 800;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+        background: linear-gradient(90deg, #ff758c, #ff7eb3);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
-    .main-header p {
+    
+    .galaxy-header p {
         font-size: 1.1rem;
-        opacity: 0.9;
+        color: #e2e8f0;
+        text-shadow: 0 1px 5px rgba(0, 0, 0, 0.8);
     }
 
-    /* Chat bubble styling */
+    /* Chat bubble styling for Galaxy theme */
     .stChatMessage {
-        border-radius: 12px;
+        background-color: rgba(25, 33, 56, 0.85) !important;
+        border-radius: 15px;
         padding: 15px;
-        margin-bottom: 12px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        margin-bottom: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #f1f5f9 !important;
     }
-    
+
     /* Input box customization */
     .stChatInput input {
+        background-color: rgba(15, 23, 42, 0.9) !important;
+        color: white !important;
         border-radius: 25px !important;
-        border: 2px solid #667eea !important;
+        border: 2px solid #7c3aed !important;
     }
-    
+
     /* Sidebar styling */
     section[data-testid="stSidebar"] {
-        background-color: #ffffff;
-        border-right: 1px solid #e0e0e0;
+        background-color: #0f172a !important;
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    section[data-testid="stSidebar"] * {
+        color: #f8fafc !important;
     }
     </style>
 """,
@@ -71,136 +95,187 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Beautiful Header Section
+# Galaxy Header Section
 st.markdown(
     """
-    <div class="main-header">
-        <h1>🎓 Aryan's Student Pro AI Assistant</h1>
-        <p>विद्यार्थियों के लिए समर्पित एडवांस, स्मार्ट और शक्तिशाली एआई साथी</p>
+    <div class="galaxy-header">
+        <h1>✨ Aryan's Student Pro AI Assistant 🌌</h1>
+        <p>ब्रह्मांड की अनंत गहराइयों से जुड़ा विद्यार्थियों का स्मार्ट और आधुनिक एआई साथी</p>
     </div>
 """,
     unsafe_allow_html=True,
 )
 
-# Sidebar for extra features & navigation
+
+# Function to generate PDF notes from chat history
+def create_pdf(messages):
+  buffer = BytesIO()
+  p = canvas.Canvas(buffer, pagesize=letter)
+  width, height = letter
+
+  p.setFont("Helvetica-Bold", 16)
+  p.drawString(50, height - 50, "Aryan's Student Pro AI - Galaxy Study Notes")
+
+  p.setFont("Helvetica", 10)
+  p.drawString(50, height - 70, "Generated automatically for students & explorers.")
+
+  y = height - 100
+  p.setFont("Helvetica", 11)
+
+  for msg in messages:
+    role = "Student" if msg["role"] == "user" else "AI Assistant"
+    text = f"{role}: {msg['content']}"
+
+    lines = text.split("\n")
+    for line in lines:
+      if y < 50:
+        p.showPage()
+        y = height - 50
+        p.setFont("Helvetica", 11)
+      p.drawString(50, y, line[:90])
+      y -= 18
+    y -= 10
+
+  p.save()
+  buffer.seek(0)
+  return buffer
+
+
+# Sidebar with Tools & PDF Download
 with st.sidebar:
-  st.image(
-      "https://img.icons8.com/color/96/artificial-intelligence.png", width=70
-  )
-  st.header("💡 अध्ययन क्षेत्र")
+  st.image("https://img.icons8.com/color/96/experimental-rocket.png", width=70)
+  st.header("🌌 गैलेक्सी टूल्स")
   st.markdown(
-      "- 🔬 **विज्ञान एवं भौतिकी**\n- 🧬 **जीव विज्ञान (Biology)**\n- 💻"
-      " **कंप्यूटर & कोडिंग**\n- 📐 **गणित और तार्किक प्रश्न**\n- 🌍 **इतिहास व"
-      " भूगोल**"
+      "- 🎤 **वॉइस टाइपिंग:** बोलकर अपना सवाल पूछें\n- 📥 **PDF नोट्स:** अपनी चैट"
+      " को तुरंत डाउनलोड करें"
   )
   st.markdown("---")
-  st.info(
-      "यह ऐप हर छात्र को हर विषय पर विस्तृत, उच्च-गुणवत्ता वाले और लंबे जवाब"
-      " प्रदान करने के लिए डिजाइन की गई है।"
-  )
 
-# Initialize chat history in session state
+  if "messages" in st.session_state and len(st.session_state.messages) > 1:
+    pdf_data = create_pdf(st.session_state.messages)
+    st.download_button(
+        label="📥 चैट नोट्स PDF डाउनलोड करें",
+        data=pdf_data,
+        file_name="Aryan_Galaxy_Study_Notes.pdf",
+        mime="application/pdf",
+    )
+
+  st.markdown("---")
+  st.info("यह ऐप ब्रह्मांडीय ज्ञान और उन्नत शिक्षा का अद्भुत संगम है।")
+
+# Initialize chat history
 if "messages" not in st.session_state:
   st.session_state.messages = [
       {
           "role": "assistant",
           "content": (
-              "नमस्ते आर्यन! मैं आपका स्टूडेंट प्रो एआई असिस्टेंट हूँ। आज आप"
-              " कौन सा नया विषय या सवाल सीखना चाहते हैं? मुझसे बेझिझक पूछिए!"
+              "नमस्ते आर्यन! 🌌 मैं आपका गैलेक्सी स्टूडेंट प्रो एआई असिस्टेंट"
+              " हूँ। आज ब्रह्मांड के किस रहस्य या विषय पर चर्चा करनी है? बेझिझक"
+              " पूछिए!"
           ),
       }
   ]
 
-# Display chat history on app rerun
+# Display chat history
 for message in st.session_state.messages:
   with st.chat_message(message["role"]):
     st.markdown(message["content"])
 
 
-# Advanced Real-Time Server Simulation & Universal Knowledge Engine
-def get_live_server_response(query):
+# Universal Knowledge & Server Engine
+def get_ai_response(query):
   q = query.lower().strip()
 
-  # Pre-built deep knowledge matching for common student topics
-  if "human body" in q or "sharir" in q or "मानव शरीर" in q:
+  if "milky way" in q or "galaxy" in q or "आकाशगंगा" in q:
+    return (
+        "### 🌌 मिल्की वे (Milky Way) आकाशगंगा\n\nमिल्की वे वह आकाशगंगा है"
+        " जिसमें हमारा सौर मंडल (Solar System) स्थित है।\n\n- **आकार (Shape):**"
+        " यह एक **सर्पिल (Spiral)** आकाशगंगा है।\n- **तारे और ग्रह:** इसमें अरबों"
+        " तारे, गैस के बादल और धूलकण हैं। हमारे सौर मंडल में पृथ्वी, चंद्रमा"
+        " और सूर्य इसी का हिस्सा हैं।"
+    )
+  elif "space" in q or "universe" in q or "ब्रह्मांड" in q:
+    return (
+        "### 🌠 ब्रह्मांड (Universe) का रहस्य\n\nब्रह्मांड में सभी समय,"
+        " अंतरिक्ष, ऊर्जा, ग्रह, तारे, आकाशगंगाएँ और सभी जीवित पदार्थ शामिल"
+        " हैं। इसकी उत्पत्ति लगभग 13.8 अरब साल पहले **बिग बैंग (Big Bang)**"
+        " महाविस्फोट से हुई थी।"
+    )
+  elif "human body" in q or "sharir" in q or "मानव शरीर" in q:
     return (
         "### 🧬 मानव शरीर (Human Body): एक अद्भुत जैविक तंत्र\n\nमानव शरीर"
-        " प्रकृति की सबसे जटिल, उन्नत और सुव्यवस्थित रचना है, जो खरबों सूक्ष्म"
-        " कोशिकाओं (Cells) के समन्वय से बनी है।\n\n#### मुख्य शारीरिक प्रणालियाँ"
-        " (Systems):\n1. **पाचन तंत्र (Digestive System):** भोजन को ऊर्जा में"
-        " तोड़कर पूरे शरीर को पोषण प्रदान करता है।\n2. **श्वसन तंत्र (Respiratory"
-        " System):** ऑक्सीजन अंदर लेता है और कोशिकाओं तक पहुँचाकर ऊर्जा बनाने"
-        " में मदद करता है।\n3. **परिसंचरण तंत्र (Circulatory System):** हृदय"
-        " (Heart) के माध्यम से रक्त को पूरे शरीर में पंप करता है।\n4. **तंत्रिका"
-        " तंत्र (Nervous System):** मस्तिष्क (Brain) और नसों का जाल जो शरीर की"
-        " हर गतिविधि और सोच को नियंत्रित करता है।\n\n*विद्यार्थियों के लिए टिप:*"
-        " जीव विज्ञान (Biology) में यह सबसे अधिक पूछा जाने वाला स्कोरिंग टॉपिक"
-        " है।"
-    )
-  elif "cell" in q or "कोशिका" in q:
-    return (
-        "### 🔬 कोशिका (Cell): जीवन की मूल इकाई\n\nकोशिका सभी जीवित जीवों की"
-        " संरचनात्मक और कार्यात्मक इकाई (Structural and Functional Unit)"
-        " है।\n\n- **ऐतिहासिक पृष्ठभूमि:** इसकी खोज सबसे पहले **रॉबर्ट हुक**"
-        " द्वारा 1665 में माइक्रोस्कोप के जरिए की गई थी।\n- **कोशिका के मुख्य"
-        " प्रकार:**\n  - **प्रोकैरियोटिक कोशिकाएं:** इनमें स्पष्ट केंद्रक"
-        " (Nucleus) नहीं होता (उदाहरण: बैक्टीरिया)।\n  - **यूकैरियोटिक"
-        " कोशिकाएं:** इनमें पूर्ण विकसित केंद्रक और झिल्ली-युक्त अंगक होते हैं"
-        " (उदाहरण: पौधे और जंतु)।\n- **पावरहाउस:** माइटोकॉन्ड्रिया को कोशिका का"
-        " पावरहाउस कहा जाता है क्योंकि यह एटीपी (ATP) के रूप में ऊर्जा बनाता"
-        " है।"
+        " प्रकृति की सबसे जटिल रचना है, जो खरबों सूक्ष्म कोशिकाओं से मिलकर"
+        " बनी है। पाचन, श्वसन, परिसंचरण और तंत्रिका तंत्र इसके मुख्य स्तंभ हैं।"
     )
   elif "computer" in q or "कंप्यूटर" in q:
     return (
         "### 💻 कंप्यूटर (Computer) और उसकी कार्यप्रणाली\n\nकंप्यूटर एक आधुनिक"
-        " इलेक्ट्रॉनिक उपकरण है जो यूजर द्वारा दिए गए डेटा (Input) को स्वीकार"
-        " करता है, सॉफ्टवेयर निर्देशों के अनुसार उसे प्रोसेस (Process) करता"
-        " है, और एक सटीक परिणाम (Output) प्रस्तुत करता है।\n\n- **जनक (Father"
-        " of Computer):** **चार्ल्स बैबेज** को आधुनिक कंप्यूटर का जनक माना"
-        " जाता है।\n- **मुख्य घटक:**\n  - **हार्डवेयर:** CPU, RAM, Hard Disk,"
-        " Monitor, Keyboard.\n  - **सॉफ्टवेयर:** Operating System (Windows,"
-        " Linux) और एप्लीकेशन प्रोग्राम्स।\n- **महत्व:** आज शिक्षा, चिकित्सा,"
-        " विज्ञान और अंतरिक्ष अनुसंधान—हर क्षेत्र में कंप्यूटर अनिवार्य हो"
-        " गया है।"
+        " इलेक्ट्रॉनिक उपकरण है जो डेटा को प्रोसेस करके सटीक परिणाम देता है।"
+        " इसके जनक **चार्ल्स बैबेज** हैं।"
     )
   else:
-    # Universal Dynamic Server-Style Deep Explanation Generator for any custom query
     return (
-        f"### 📚 विस्तृत अध्ययन एवं विश्लेषण: {query}\n\nविद्यार्थियों और शोध"
-        f" के दृष्टिकोण से '{query}' एक अत्यंत महत्वपूर्ण, ज्ञानवर्धक और"
-        " प्रासंगिक विषय है। आइए इसे गहराई से समझें:\n\n1. **परिचय एवं पृष्ठभूमि"
-        " (Introduction):** इस विषय की उत्पत्ति और बुनियादी सिद्धांत इसे विज्ञान,"
-        " शिक्षा और हमारे दैनिक जीवन से जोड़ते हैं। इसकी मूल अवधारणाओं को"
-        " समझना परीक्षा और व्यावहारिक ज्ञान दोनों के लिए आवश्यक है।\n2. **मुख्य"
-        " विशेषताएँ एवं आयाम (Core Aspects):** इसके अंतर्गत विभिन्न चरणों, घटकों"
-        " और उनके प्रभावों का वैज्ञानिक तथा तार्किक अध्ययन किया जाता है। यह"
-        " विषय समस्याओं को सुलझाने (Problem Solving) में हमारी सहायता करता"
-        " है।\n3. **भविष्य की संभावनाएँ एवं निष्कर्ष (Conclusion):** इस क्षेत्र"
-        " में निरंतर नए अनुसंधान और विकास हो रहे हैं, जो मानव जीवन को और अधिक"
-        " सरल और उन्नत बना रहे हैं।\n\nयदि आप इस विषय के किसी विशेष भाग, फॉर्मूले"
-        " या इतिहास के बारे में और अधिक विस्तार से जानना चाहते हैं, तो कृपया नीचे"
-        " दोबारा पूछें!"
+        f"### 📚 विस्तृत अध्ययन एवं विश्लेषण: {query}\n\nविद्यार्थियों के"
+        f" दृष्टिकोण से '{query}' एक अत्यंत महत्वपूर्ण विषय है:\n\n1. **परिचय:**"
+        " इस विषय के बुनियादी सिद्धांतों को समझना परीक्षा और ज्ञान दोनों के लिए"
+        " आवश्यक है。\n2. **वैज्ञानिक महत्व:** यह हमारे ब्रह्मांड और दैनिक जीवन"
+        " से गहराई से जुड़ा हुआ है。\n3. **निष्कर्ष:** इसके निरंतर अध्ययन से"
+        " हमारी तार्किक क्षमता में वृद्धि होती है।"
     )
 
 
-# Accept user input from chat box
-if prompt := st.chat_input("यहाँ अपना कोई भी सवाल पूछें..."):
-  # Append user message to state
+# Voice Input via HTML5 Speech Recognition
+st.markdown("### 🎙️ बोलकर सवाल पूछें (Voice Typing)")
+voice_html = """
+<div style="margin-bottom: 15px;">
+    <button onclick="startListening()" style="background-color: #7c3aed; color: white; border: none; padding: 10px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);">🎤 माइक ऑन करके बोलें</button>
+    <span id="speech-status" style="margin-left: 10px; font-size: 0.9rem; color: #cbd5e1;"></span>
+</div>
+<script>
+function startListening() {
+    const status = document.getElementById('speech-status');
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        status.innerText = "आपका ब्राउज़र वॉइस टाइपिंग सपोर्ट नहीं करता है।";
+        return;
+    }
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'hi-IN';
+    recognition.onstart = function() {
+        status.innerText = "ब्रह्मांड सुन रहा है... बोलिए!";
+    };
+    recognition.onresult = function(event) {
+        const speechToText = event.results[0][0].transcript;
+        status.innerText = "सुना गया: " + speechToText;
+        const chatInput = document.querySelector('input[aria-label*="chat"]');
+        if (chatInput) {
+            chatInput.value = speechToText;
+            chatInput.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+    };
+    recognition.onerror = function(event) {
+        status.innerText = "त्रुटि आई, कृपया दोबारा कोशिश करें।";
+    };
+    recognition.start();
+}
+</script>
+"""
+st.markdown(voice_html, unsafe_allow_html=True)
+
+# Chat input box
+if prompt := st.chat_input("अपना सवाल गैलेक्सी में पूछें..."):
   st.session_state.messages.append({"role": "user", "content": prompt})
   with st.chat_message("user"):
     st.markdown(prompt)
 
-  # Display assistant response with a professional loading spinner
   with st.chat_message("assistant"):
-    with st.spinner(
-        "एआई सर्वर से डेटा प्रोसेस हो रहा है, कृपया प्रतीक्षा करें..."
-    ):
-      bot_response = get_live_server_response(prompt)
+    with st.spinner("गैलेक्सी सर्वर से उत्तर आ रहा है..."):
+      bot_response = get_ai_response(prompt)
     st.markdown(bot_response)
-    # Append assistant response to state
     st.session_state.messages.append(
         {"role": "assistant", "content": bot_response}
     )
+      
       
       
       
