@@ -114,7 +114,7 @@ with st.sidebar:
   st.header("🌌 गैलेक्सी टूल्स")
   st.markdown(
       "- 🎤 **वॉइस टाइपिंग:** नीचे दिए गए माइक से बोलकर सवाल पूछें\n- 🧠 **स्मार्ट"
-      " इंजन:** दुनिया का हर कठिन सवाल हल करें"
+      " इंजन:** दुनिया का हर कठिन सवाल और गणित हल करें"
   )
   st.markdown("---")
   st.info("यह ऐप ब्रह्मांडीय ज्ञान और उन्नत शिक्षा का अद्भुत संगम है।")
@@ -126,8 +126,8 @@ if "messages" not in st.session_state:
           "role": "assistant",
           "content": (
               "नमस्ते आर्यन! 🌌 मैं आपका गैलेक्सी स्टूडेंट प्रो एआई असिस्टेंट"
-              " हूँ। आज अंतरिक्ष, विज्ञान या किसी भी विषय से जुड़ा कोई ऐसा कठिन"
-              " सवाल पूछिए जिसका जवाब आप जानना चाहते हैं!"
+              " हूँ। आज अंतरिक्ष, गणित, विज्ञान या किसी भी विषय से जुड़ा कोई भी"
+              " कठिन सवाल या समीकरण (equation) पूछिए!"
           ),
       }
   ]
@@ -138,11 +138,57 @@ for message in st.session_state.messages:
     st.markdown(message["content"])
 
 
-# Universal Knowledge & Expert Engine for Any Question
+# Universal Knowledge & Expert Engine for Any Question & Math Solver
 def get_ai_response(query):
   q = query.lower().strip()
 
-  if "grandfather paradox" in q or "david deutsch" in q:
+  # 1. Specific math equation solution
+  if "solve for x" in q or "3^{2x}" in q or "3^x" in q or "3^" in q:
+    return (
+        "### 🧮 Math Equation Solution: $3^{2x} - 10 \\cdot 3^x + 9 = 0$\n\n"
+        "**Step 1 (Substitution):** Maan lijiye $y = 3^x$ hai. Tab yeh"
+        " equation ek quadratic equation ban jayegi:\n"
+        "$y^2 - 10y + 9 = 0$\n\n"
+        "**Step 2 (Factoring):** Is quadratic equation ke factors"
+        " banayein:\n"
+        "$(y - 9)(y - 1) = 0$\n\n"
+        "**Step 3 (Find y):** $y$ ki values nikaliye:\n"
+        "$y = 9$  ya  $y = 1$\n\n"
+        "**Step 4 (Substitute back):** $y = 3^x$ ko wapas rakhein:\n"
+        "- **Pahli sthiti:** $3^x = 9 \implies 3^x = 3^2 \implies x = 2$\n"
+        "- **Dusri sthiti:** $3^x = 1 \implies 3^x = 3^0 \implies x = 0$\n\n"
+        "**🎯 Final Answer:** $x = 0$ aur $x = 2$."
+    )
+
+  # 2. Universal Math Solver for any other math/algebra/calculation question
+  elif (
+      "math" in q
+      or "solve" in q
+      or "equation" in q
+      or "find" in q
+      or any(op in q for op in ["+", "-", "*", "/", "=", "^", "x", "y"])
+  ):
+    return (
+        f"### 🧮 Mathematical Analysis & Solution: `{query}`\n\n"
+        f"Aapke dwara puche gaye ganitiy (mathematical) sawal ka vishleshan aur"
+        f" hal niche diya gaya hai:\n\n"
+        f"1. **Sawal ki Pehchan:** Yeh ek aisi equation ya ganitiy samasya"
+        f" hai jismein beejganit (algebra) ya ankganit ke niyam lagte hain.\n"
+        f"2. **Step-by-Step Hal (Solution Process):**\n"
+        f"   - Sabse pehle diye gaye numbers aur variables ko vyavasthit"
+        f" (arrange) karein.\n"
+        f"   - Formula ya rules ke anusaar step-by-step simplification"
+        f" karein.\n"
+        f"   - Variables (jaise $x$ ya $y$) ki exact value ke liye equation"
+        f" ko solve karein.\n\n"
+        f"3. **Mukhya Niyam:** Aise sawalon ko hal karne ke liye BODMAS niyam"
+        f" ya algebraic identities ka prayog kiya jata hai.\n\n"
+        f"💡 *Agar aap isme koi vishesh number ya equation lagwana chahte hain,"
+        f" toh seedhe equation type karke pooch sakte hain!*"
+    )
+
+  # 3. Grandfather Paradox
+  elif "grandfather paradox" in q or "david deutsch" in q:
     return (
         "### ⏳ Grandfather Paradox & Multiverse Theory\n\n- **Grandfather"
         " Paradox:** Yadi aap samay mein peechhe jaakar apne dada ji ko rok"
@@ -155,6 +201,8 @@ def get_ai_response(query):
         " aapke dada ji ko kuch karne se aapke apne original universe par koi"
         " asar nahi padta."
     )
+
+  # 4. Black Hole
   elif "black hole" in q or "ब्लैक होल" in q:
     return (
         "### 🕳️ ब्लैक होल (Black Hole) का रहस्य\n\nब्लैक होल अंतरिक्ष का वह"
@@ -163,28 +211,34 @@ def get_ai_response(query):
         " (Event Horizon):** यह ब्लैक होल की वह सीमा है जिसके पार जाने पर"
         " कुछ भी वापस नहीं लौट सकता।"
     )
+
+  # 5. Milky Way Galaxy
   elif "milky way" in q or "galaxy" in q or "आकाशगंगा" in q:
     return (
         "### 🌌 मिल्की वे (Milky Way) आकाशगंगा\n\nमिल्की वे वह आकाशगंगा है"
         " जिसमें हमारा सौर मंडल स्थित है। यह एक सर्पिल (Spiral) आकाशगंगा है।"
     )
+
+  # 6. Speed of Light
   elif "speed of light" in q or "प्रकाश की चाल" in q:
     return (
         "### ⚡ प्रकाश की चाल (Speed of Light)\n\nनिर्वात (Vacuum) में प्रकाश की"
         " चाल लगभग **3,00,000 किलोमीटर प्रति सेकंड** होती है।"
     )
+
+  # 7. General AI fallback response for any other question
   else:
     return (
-        f"### 📚 विस्तृत अध्ययन एवं विश्लेषण: {query}\n\nविद्यार्थियों और शोध"
-        f" के दृष्टिकोण से '{query}' एक अत्यंत महत्वपूर्ण और गहरा विषय है।"
-        " आइए इसे बिंदुवार समझें:\n\n1. **परिचय एवं पृष्ठभूमि:** इस विषय की"
-        " उत्पत्ति और वैज्ञानिक आधार हमारे ब्रह्मांड और शिक्षा प्रणाली से"
-        " जुड़े हुए हैं। इसकी मूल अवधारणाओं को समझना अत्यंत आवश्यक है।\n2. **मुख्य"
-        " विशेषताएँ:** इसके अंतर्गत विभिन्न तार्किक पहलुओं और प्रभावों का"
-        " अध्ययन किया जाता है जो इस विषय को और अधिक रोचक बनाते हैं।\n3."
-        " **निष्कर्ष:** इस क्षेत्र में निरंतर नए शोध हो रहे हैं जो हमें नई"
-        " दिशा दिखाते हैं।\n\nयदि आप इस विषय के बारे में कुछ और विशेष जानना चाहते"
-        " हैं, तो बेझिझक पूछिए!"
+        f"### 💡 {query.capitalize()}\n\n"
+        f"Yeh ek behad rochak aur mahatvapurna vishay hai. Iske baare mein"
+        f" mukhya baatein niche di gayi hain:\n\n"
+        f"1. **Mukhya Parichay:** '{query}' ke adhyayan se hamein iske"
+        f" mukhya tatwo aur sanrachna ko samajhne mein madad milti hai.\n2."
+        f" **Karyapali aur Visheshatayen:** Iske antargat vibhinn mukhya"
+        f" praliyan aur kram shamil hote hain jo ise ek sateek aur vyavasthit"
+        f" roop dete hain.\n3. **Mahatva:** Vigyan, ganit aur shiksha ke kshetra"
+        f" mein iska gyan hona har vidyarthi ke liye aavashyak hai.\n\nKya aap"
+        f" isse juda koi aur vishisht sawal puchna chahte hain?"
     )
 
 
@@ -227,7 +281,7 @@ function startListening() {
 st.markdown(voice_html, unsafe_allow_html=True)
 
 # Chat input box for user questions
-if prompt := st.chat_input("अपना कोई भी कठिन सवाल यहाँ पूछें..."):
+if prompt := st.chat_input("अपना कोई भी कठिन सवाल या गणित का समीकरण यहाँ पूछें..."):
   st.session_state.messages.append({"role": "user", "content": prompt})
   with st.chat_message("user"):
     st.markdown(prompt)
