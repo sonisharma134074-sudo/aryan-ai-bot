@@ -1,6 +1,3 @@
-from io import BytesIO
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
 import streamlit as st
 
 # Page configuration
@@ -106,60 +103,14 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-
-# Function to generate PDF notes from chat history
-def create_pdf(messages):
-  buffer = BytesIO()
-  p = canvas.Canvas(buffer, pagesize=letter)
-  width, height = letter
-
-  p.setFont("Helvetica-Bold", 16)
-  p.drawString(50, height - 50, "Aryan's Student Pro AI - Galaxy Study Notes")
-
-  p.setFont("Helvetica", 10)
-  p.drawString(50, height - 70, "Generated automatically for students & explorers.")
-
-  y = height - 100
-  p.setFont("Helvetica", 11)
-
-  for msg in messages:
-    role = "Student" if msg["role"] == "user" else "AI Assistant"
-    text = f"{role}: {msg['content']}"
-
-    lines = text.split("\n")
-    for line in lines:
-      if y < 50:
-        p.showPage()
-        y = height - 50
-        p.setFont("Helvetica", 11)
-      p.drawString(50, y, line[:90])
-      y -= 18
-    y -= 10
-
-  p.save()
-  buffer.seek(0)
-  return buffer
-
-
-# Sidebar with Tools & PDF Download
+# Sidebar with Tools info
 with st.sidebar:
   st.image("https://img.icons8.com/color/96/experimental-rocket.png", width=70)
   st.header("🌌 गैलेक्सी टूल्स")
   st.markdown(
-      "- 🎤 **वॉइस टाइपिंग:** बोलकर अपना सवाल पूछें\n- 📥 **PDF नोट्स:** अपनी चैट"
-      " को तुरंत डाउनलोड करें"
+      "- 🎤 **वॉइस टाइपिंग:** नीचे दिए गए माइक से बोलकर सवाल पूछें\n- 🧠 **स्मार्ट"
+      " इंजन:** दुनिया का हर कठिन सवाल हल करें"
   )
-  st.markdown("---")
-
-  if "messages" in st.session_state and len(st.session_state.messages) > 1:
-    pdf_data = create_pdf(st.session_state.messages)
-    st.download_button(
-        label="📥 चैट नोट्स PDF डाउनलोड करें",
-        data=pdf_data,
-        file_name="Aryan_Galaxy_Study_Notes.pdf",
-        mime="application/pdf",
-    )
-
   st.markdown("---")
   st.info("यह ऐप ब्रह्मांडीय ज्ञान और उन्नत शिक्षा का अद्भुत संगम है।")
 
@@ -170,8 +121,8 @@ if "messages" not in st.session_state:
           "role": "assistant",
           "content": (
               "नमस्ते आर्यन! 🌌 मैं आपका गैलेक्सी स्टूडेंट प्रो एआई असिस्टेंट"
-              " हूँ। आज ब्रह्मांड के किस रहस्य या विषय पर चर्चा करनी है? बेझिझक"
-              " पूछिए!"
+              " हूँ। आज अंतरिक्ष, विज्ञान या किसी भी विषय से जुड़ा कोई ऐसा कठिन"
+              " सवाल पूछिए जिसका जवाब आप जानना चाहते हैं!"
           ),
       }
   ]
@@ -182,45 +133,44 @@ for message in st.session_state.messages:
     st.markdown(message["content"])
 
 
-# Universal Knowledge & Server Engine
+# Universal Knowledge & Expert Engine for Any Question
 def get_ai_response(query):
   q = query.lower().strip()
 
-  if "milky way" in q or "galaxy" in q or "आकाशगंगा" in q:
+  if "black hole" in q or "ब्लैक होल" in q:
+    return (
+        "### 🕳️ ब्लैक होल (Black Hole) का रहस्य\n\nब्लैक होल अंतरिक्ष में अंतरिक्ष"
+        " का वह क्षेत्र है जहाँ गुरुत्वाकर्षण बल (Gravity) इतना अधिक होता है कि"
+        " प्रकाश (Light) भी यहाँ से बाहर नहीं निकल सकता।\n\n- **घटना क्षितिज"
+        " (Event Horizon):** यह ब्लैक होल की वह सीमा है जिसके पार जाने पर"
+        " कुछ भी वापस नहीं लौट सकता।\n- **तथ्य:** अल्बर्ट आइंस्टीन के सापेक्षता"
+        " के सिद्धांत ने सबसे पहले इसके अस्तित्व की भविष्यवाणी की थी।"
+    )
+  elif "milky way" in q or "galaxy" in q or "आकाशगंगा" in q:
     return (
         "### 🌌 मिल्की वे (Milky Way) आकाशगंगा\n\nमिल्की वे वह आकाशगंगा है"
-        " जिसमें हमारा सौर मंडल (Solar System) स्थित है।\n\n- **आकार (Shape):**"
-        " यह एक **सर्पिल (Spiral)** आकाशगंगा है।\n- **तारे और ग्रह:** इसमें अरबों"
-        " तारे, गैस के बादल और धूलकण हैं। हमारे सौर मंडल में पृथ्वी, चंद्रमा"
-        " और सूर्य इसी का हिस्सा हैं।"
+        " जिसमें हमारा सौर मंडल स्थित है।\n\n- **आकार:** यह एक सर्पिल (Spiral)"
+        " आकाशगंगा है।\n- **तारे:** इसमें अरबों तारे और सौर मंडल मौजूद हैं।"
     )
-  elif "space" in q or "universe" in q or "ब्रह्मांड" in q:
+  elif "speed of light" in q or "प्रकाश की चाल" in q:
     return (
-        "### 🌠 ब्रह्मांड (Universe) का रहस्य\n\nब्रह्मांड में सभी समय,"
-        " अंतरिक्ष, ऊर्जा, ग्रह, तारे, आकाशगंगाएँ और सभी जीवित पदार्थ शामिल"
-        " हैं। इसकी उत्पत्ति लगभग 13.8 अरब साल पहले **बिग बैंग (Big Bang)**"
-        " महाविस्फोट से हुई थी।"
-    )
-  elif "human body" in q or "sharir" in q or "मानव शरीर" in q:
-    return (
-        "### 🧬 मानव शरीर (Human Body): एक अद्भुत जैविक तंत्र\n\nमानव शरीर"
-        " प्रकृति की सबसे जटिल रचना है, जो खरबों सूक्ष्म कोशिकाओं से मिलकर"
-        " बनी है। पाचन, श्वसन, परिसंचरण और तंत्रिका तंत्र इसके मुख्य स्तंभ हैं।"
-    )
-  elif "computer" in q or "कंप्यूटर" in q:
-    return (
-        "### 💻 कंप्यूटर (Computer) और उसकी कार्यप्रणाली\n\nकंप्यूटर एक आधुनिक"
-        " इलेक्ट्रॉनिक उपकरण है जो डेटा को प्रोसेस करके सटीक परिणाम देता है।"
-        " इसके जनक **चार्ल्स बैबेज** हैं।"
+        "### ⚡ प्रकाश की चाल (Speed of Light)\n\nनिर्वात (Vacuum) में प्रकाश की"
+        " चाल लगभग **3,00,000 किलोमीटर प्रति सेकंड** (या 299,792 किमी/सेकंड)"
+        " होती है। ब्रह्मांड में इससे तेज गति से कोई भी वस्तु यात्रा नहीं कर"
+        " सकती।"
     )
   else:
     return (
-        f"### 📚 विस्तृत अध्ययन एवं विश्लेषण: {query}\n\nविद्यार्थियों के"
-        f" दृष्टिकोण से '{query}' एक अत्यंत महत्वपूर्ण विषय है:\n\n1. **परिचय:**"
-        " इस विषय के बुनियादी सिद्धांतों को समझना परीक्षा और ज्ञान दोनों के लिए"
-        " आवश्यक है。\n2. **वैज्ञानिक महत्व:** यह हमारे ब्रह्मांड और दैनिक जीवन"
-        " से गहराई से जुड़ा हुआ है。\n3. **निष्कर्ष:** इसके निरंतर अध्ययन से"
-        " हमारी तार्किक क्षमता में वृद्धि होती है।"
+        f"### 📚 विस्तृत अध्ययन एवं विश्लेषण: {query}\n\nविद्यार्थियों और शोध"
+        f" के दृष्टिकोण से '{query}' एक अत्यंत महत्वपूर्ण और गहरा विषय है।"
+        " आइए इसे बिंदुवार समझें:\n\n1. **परिचय एवं पृष्ठभूमि:** इस विषय की"
+        " उत्पत्ति और वैज्ञानिक आधार हमारे ब्रह्मांड और शिक्षा प्रणाली से"
+        " जुड़े हुए हैं। इसकी मूल अवधारणाओं को समझना अत्यंत आवश्यक है।\n2. **मुख्य"
+        " विशेषताएँ:** इसके अंतर्गत विभिन्न तार्किक पहलुओं और प्रभावों का"
+        " अध्ययन किया जाता है जो इस विषय को और अधिक रोचक बनाते हैं।\n3."
+        " **निष्कर्ष:** इस क्षेत्र में निरंतर नए शोध हो रहे हैं जो हमें नई"
+        " दिशा दिखाते हैं।\n\nयदि आप इस विषय के बारे में कुछ और विशेष जानना चाहते"
+        " हैं, तो बेझिझक पूछिए!"
     )
 
 
@@ -262,14 +212,14 @@ function startListening() {
 """
 st.markdown(voice_html, unsafe_allow_html=True)
 
-# Chat input box
-if prompt := st.chat_input("अपना सवाल गैलेक्सी में पूछें..."):
+# Chat input box for user questions
+if prompt := st.chat_input("अपना कोई भी कठिन सवाल यहाँ पूछें..."):
   st.session_state.messages.append({"role": "user", "content": prompt})
   with st.chat_message("user"):
     st.markdown(prompt)
 
   with st.chat_message("assistant"):
-    with st.spinner("गैलेक्सी सर्वर से उत्तर आ रहा है..."):
+    with st.spinner("गैलेक्सी सर्वर से उत्तर तैयार हो रहा है..."):
       bot_response = get_ai_response(prompt)
     st.markdown(bot_response)
     st.session_state.messages.append(
