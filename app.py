@@ -8,7 +8,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# Custom CSS Styling with Stunning Milky Way Galaxy Theme, Stars, and Cosmic Look
+# Custom CSS Styling with Stunning Milky Way Galaxy Theme, Stars, and Bright Text Fix
 st.markdown(
     """
     <style>
@@ -50,7 +50,7 @@ st.markdown(
         text-shadow: 0 1px 5px rgba(0, 0, 0, 0.8);
     }
 
-    /* Chat bubble styling for Galaxy theme */
+    /* Chat bubble styling for Galaxy theme with full brightness fix */
     .stChatMessage {
         background-color: rgba(25, 33, 56, 0.85) !important;
         border-radius: 15px;
@@ -58,7 +58,12 @@ st.markdown(
         margin-bottom: 15px;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
         border: 1px solid rgba(255, 255, 255, 0.1);
-        color: #f1f5f9 !important;
+        color: #ffffff !important;
+    }
+    
+    .stChatMessage p, .stChatMessage li, .stChatMessage span, .stChatMessage div {
+        color: #ffffff !important;
+        font-weight: 500 !important;
     }
 
     /* Input box customization */
@@ -137,27 +142,36 @@ for message in st.session_state.messages:
 def get_ai_response(query):
   q = query.lower().strip()
 
-  if "black hole" in q or "ब्लैक होल" in q:
+  if "grandfather paradox" in q or "david deutsch" in q:
     return (
-        "### 🕳️ ब्लैक होल (Black Hole) का रहस्य\n\nब्लैक होल अंतरिक्ष में अंतरिक्ष"
-        " का वह क्षेत्र है जहाँ गुरुत्वाकर्षण बल (Gravity) इतना अधिक होता है कि"
+        "### ⏳ Grandfather Paradox & Multiverse Theory\n\n- **Grandfather"
+        " Paradox:** Yadi aap samay mein peechhe jaakar apne dada ji ko rok"
+        " dein jab tak unke vivaah ya santan na ho, toh aapka astitva hi khatam"
+        " ho jayega. Isse ek virodhabhas (paradox) paida hota hai.\n- **David"
+        " Deutsch's Multiverse Theory:** Quantum physicist David Deutsch ka"
+        " manna hai ki samay ya timeline linear nahi hoti balki branching"
+        " (anek shakhaon wali) hoti hai. Jab aap peechhe jaate hain, toh aap"
+        " ek alag parallel universe ya timeline mein chale jaate hain, jahan"
+        " aapke dada ji ko kuch karne se aapke apne original universe par koi"
+        " asar nahi padta."
+    )
+  elif "black hole" in q or "ब्लैक होल" in q:
+    return (
+        "### 🕳️ ब्लैक होल (Black Hole) का रहस्य\n\nब्लैक होल अंतरिक्ष का वह"
+        " क्षेत्र है जहाँ गुरुत्वाकर्षण बल (Gravity) इतना अधिक होता है कि"
         " प्रकाश (Light) भी यहाँ से बाहर नहीं निकल सकता।\n\n- **घटना क्षितिज"
         " (Event Horizon):** यह ब्लैक होल की वह सीमा है जिसके पार जाने पर"
-        " कुछ भी वापस नहीं लौट सकता।\n- **तथ्य:** अल्बर्ट आइंस्टीन के सापेक्षता"
-        " के सिद्धांत ने सबसे पहले इसके अस्तित्व की भविष्यवाणी की थी।"
+        " कुछ भी वापस नहीं लौट सकता।"
     )
   elif "milky way" in q or "galaxy" in q or "आकाशगंगा" in q:
     return (
         "### 🌌 मिल्की वे (Milky Way) आकाशगंगा\n\nमिल्की वे वह आकाशगंगा है"
-        " जिसमें हमारा सौर मंडल स्थित है।\n\n- **आकार:** यह एक सर्पिल (Spiral)"
-        " आकाशगंगा है।\n- **तारे:** इसमें अरबों तारे और सौर मंडल मौजूद हैं।"
+        " जिसमें हमारा सौर मंडल स्थित है। यह एक सर्पिल (Spiral) आकाशगंगा है।"
     )
   elif "speed of light" in q or "प्रकाश की चाल" in q:
     return (
         "### ⚡ प्रकाश की चाल (Speed of Light)\n\nनिर्वात (Vacuum) में प्रकाश की"
-        " चाल लगभग **3,00,000 किलोमीटर प्रति सेकंड** (या 299,792 किमी/सेकंड)"
-        " होती है। ब्रह्मांड में इससे तेज गति से कोई भी वस्तु यात्रा नहीं कर"
-        " सकती।"
+        " चाल लगभग **3,00,000 किलोमीटर प्रति सेकंड** होती है।"
     )
   else:
     return (
