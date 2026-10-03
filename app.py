@@ -29,7 +29,7 @@ st.markdown("""
 # (Inverted commas "" ke andar apni key paste kar dena)
 # Iske baad kisi bhi dost ko API key nahi dalni padegi!
 # =========================================================
-API_KEY = "YAHAN_APNI_ASLI_GOOGLE_API_KEY_PASTE_KAR_DENA"
+API_KEY = "AQ.Ab8RN6KRNUwx4pyqtHe_PDZ_6lKARMMz2yMwo3RrDiA2vrJb5A"
 
 try:
     genai.configure(api_key=API_KEY)
