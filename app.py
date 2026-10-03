@@ -24,14 +24,18 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Load API Key securely from Streamlit Secrets
+# =========================================================
+# YAHAN APNI ASLI GOOGLE API KEY DAL DENI HAI
+# (Inverted commas "" ke andar apni key paste kar dena)
+# Iske baad kisi bhi dost ko API key nahi dalni padegi!
+# =========================================================
+API_KEY = "YAHAN_APNI_ASLI_GOOGLE_API_KEY_PASTE_KAR_DENA"
+
 try:
-    API_KEY = st.secrets["GOOGLE_API_KEY"]
     genai.configure(api_key=API_KEY)
     model = genai.GenerativeModel('gemini-1.5-flash')
 except Exception as e:
-    st.error("API Key configuration error! Kripya Streamlit Secrets mein 'GOOGLE_API_KEY' set karein.")
-    st.stop()
+    st.error(f"Configuration Error: {e}")
 
 # App Header (English UI)
 st.title("🌌 Student Pro AI Assistant")
@@ -94,5 +98,6 @@ else:
                     st.markdown(response.text)
                 except Exception as ec:
                     st.error(f"Error: {ec}")
+                    
                     
                     
