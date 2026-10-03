@@ -25,7 +25,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.title("🚀 Student Pro AI Assistant")
-st.markdown("Duniya ka koi bhi sawal yahan puchein — **Step-by-step aur vistarit jawab payein!**")
+st.markdown("Duniya ka koi bhi sawal yahan puchein — **Step-by-step aur vistarit jawab Hindi mein payein!**")
 
 st.markdown("---")
 
@@ -37,15 +37,16 @@ query = st.text_area(
 
 if st.button("🚀 Vistarit Jawab Prapt Karein", type="primary"):
     if query.strip():
-        with st.spinner("🧠 AI step-by-step lamba aur vistarit jawab taiyar kar raha hai..."):
+        with st.spinner("🧠 AI step-by-step lamba aur vistarit jawab Hindi mein taiyar kar raha hai..."):
             try:
-                # Math aur science formulas ko proper Markdown Math ($$...$$ aur $...$) mein format karne ke liye prompt
+                # Strict Hindi language + Proper Markdown Math format prompt
                 full_prompt = (
-                    f"You are an expert AI tutor. Answer the following student query in a very detailed, "
-                    f"comprehensive, step-by-step long format. CRITICAL REQUIREMENT: For all mathematical equations, "
-                    f"formulas, and variables, use standard Markdown math notation with double dollar signs ($$ ... $$) "
-                    f"for standalone display equations and single dollar signs ($ ... $) for inline equations so they "
-                    f"render correctly. Query: {query}"
+                    f"You are an expert AI tutor. You MUST answer the following student query strictly in pure "
+                    f"Devanagari Hindi script (हिंदी में) in a very detailed, comprehensive, step-by-step long format. "
+                    f"CRITICAL REQUIREMENT for Math/Science: For all mathematical equations, formulas, and variables, "
+                    f"use standard Markdown math notation with double dollar signs ($$ ... $$) for standalone display "
+                    f"equations and single dollar signs ($ ... $) for inline equations so they render correctly. "
+                    f"Do not write explanations in English. Student Query: {query}"
                 )
                 encoded_prompt = urllib.parse.quote(full_prompt)
                 
@@ -53,7 +54,7 @@ if st.button("🚀 Vistarit Jawab Prapt Karein", type="primary"):
                 response = requests.get(url, timeout=30)
                 
                 if response.status_code == 200 and response.text.strip():
-                    st.markdown("### 📝 Step-by-Step Detailed Answer:")
+                    st.markdown("### 📝 Step-by-Step Detailed Answer (Hindi):")
                     st.markdown(response.text)
                 else:
                     st.error("Server thoda busy hai, kripya dobara try karein!")
@@ -61,6 +62,7 @@ if st.button("🚀 Vistarit Jawab Prapt Karein", type="primary"):
                 st.error(f"Connection Error: {e}")
     else:
         st.warning("Kripya pehle apna sawal likhein!")
+        
         
         
         
