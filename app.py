@@ -24,75 +24,75 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Pre-configured Final API Key
-API_KEY = "AQ.Ab8RN6L9FW1ObBqWrhaQ0JHmcbVQaZg8o2LBnLlNIROA9gVvRA"
-
+# Load API Key securely from Streamlit Secrets
 try:
+    API_KEY = st.secrets["GOOGLE_API_KEY"]
     genai.configure(api_key=API_KEY)
     model = genai.GenerativeModel('gemini-1.5-flash')
 except Exception as e:
-    st.error(f"API Key initialization error: {e}")
+    st.error("API Key configuration error! Kripya Streamlit Secrets mein 'GOOGLE_API_KEY' set karein.")
     st.stop()
 
-# App Header
+# App Header (English UI)
 st.title("🌌 Student Pro AI Assistant")
-st.markdown("### 📚 आपका स्मार्ट और आधुनिक एआई साथी (गणित, विज्ञान और हर सवाल का विस्तृत समाधान)")
+st.markdown("### 📚 Your Smart AI Companion for Math, Science & All Subjects")
 
 st.markdown("---")
 
 # Main Choice: Text Question or Photo Upload
 option = st.radio(
-    "👉 आप सवाल कैसे पूछना चाहते हैं?",
-    ("✍️ लिखकर / टाइप करके सवाल पूछें", "📸 फोटो अपलोड करके सवाल हल करें")
+    "👉 How would you like to ask your question?",
+    ("✍️ Type your question", "📸 Upload a photo of the question")
 )
 
 st.markdown("---")
 
-if option == "✍️ लिखकर / टाइप करके सवाल पूछें":
-    st.subheader("🤖 गणित या किसी भी विषय का कठिन सवाल पूछें")
-    st.markdown("यहाँ अपना सवाल लिखिए, आपको एकदम विस्तार से (Step-by-Step) लंबा और सटीक जवाब मिलेगा।")
+if option == "✍️ Type your question":
+    st.subheader("🤖 Ask any difficult question in Math or Science")
+    st.markdown("Type your question below, and you will get a detailed, step-by-step answer in **Hindi**.")
     
     user_query = st.text_area(
-        "अपना सवाल यहाँ टाइप करें:",
-        placeholder="उदा. भौतिकी का नियम क्या है या समीकरण (x^2 + 5x + 6 = 0) को हल करें...",
+        "Enter your question here:",
+        placeholder="e.g., Solve the equation x^2 + 5x + 6 = 0 or explain Newton's laws...",
         height=130
     )
     
-    if st.button("🚀 विस्तृत जवाब प्राप्त करें (Solve)", type="primary"):
+    if st.button("🚀 Get Detailed Answer (Solve)", type="primary"):
         if user_query.strip():
-            with st.spinner("🧠 एआई ब्रह्मांडीय ज्ञान से उत्तर तैयार कर रहा है..."):
+            with st.spinner("🧠 AI is generating a detailed answer in Hindi..."):
                 try:
                     prompt_text = (
                         "You are an expert, friendly student tutor. "
-                        "Provide a very detailed, comprehensive, step-by-step long answer in Hindi "
+                        "Provide a very detailed, comprehensive, step-by-step long answer in pure Devanagari Hindi script (हिंदी में) "
                         "for the following student query: " + user_query
                     )
                     response = model.generate_content(prompt_text)
-                    st.markdown("### 📝 विस्तृत उत्तर (Detailed Answer):")
+                    st.markdown("### 📝 Detailed Answer (विस्तृत उत्तर):")
                     st.markdown(response.text)
                 except Exception as e:
-                    st.error(f"त्रुटि (Error): {e}")
+                    st.error(f"Error: {e}")
         else:
-            st.warning("कृपया पहले अपना सवाल दर्ज करें!")
+            st.warning("Please enter your question first!")
 
 else:
-    st.subheader("📸 फोटो अपलोड करके सवाल हल करें")
-    st.markdown("अपने सवाल या गणित के समीकरण की फोटो यहाँ अपलोड करें:")
+    st.subheader("📸 Upload Photo to Solve Question")
+    st.markdown("Upload a photo of your question or math equation below:")
     
-    uploaded_file = st.file_uploader("सवाल की फोटो चुनें (JPG, PNG)", type=["jpg", "jpeg", "png"])
+    uploaded_file = st.file_uploader("Choose question photo (JPG, PNG)", type=["jpg", "jpeg", "png"])
     
-    image_prompt = st.text_input("फोटो से संबंधित कोई निर्देश (वैकल्पिक):", value="इस सवाल को हल करें और विस्तार से स्टेप-बाय-स्टेप समझाएं।")
+    image_prompt = st.text_input("Instructions for photo (Optional):", value="Solve this question and explain step-by-step in Hindi.")
     
     if uploaded_file is not None:
         image = Image.open(uploaded_file)
-        st.image(image, caption="अपलोड की गई तस्वीर", use_column_width=True)
+        st.image(image, caption="Uploaded Image", use_column_width=True)
         
-        if st.button("🔍 फोटो का विश्लेषण और समाधान करें", type="primary"):
-            with st.spinner("👀 फोटो को पढ़ा जा रहा है और समाधान तैयार हो रहा है..."):
+        if st.button("🔍 Analyze and Solve Photo", type="primary"):
+            with st.spinner("👀 Reading photo and generating solution in Hindi..."):
                 try:
                     response = model.generate_content([image, image_prompt])
-                    st.markdown("### 📝 विस्तृत समाधान (Detailed Solution):")
+                    st.markdown("### 📝 Detailed Solution (विस्तृत समाधान):")
                     st.markdown(response.text)
-                except Exception as e:
-                    st.error(f"त्रुटि (Error): {e}")
+                except Exception as ec:
+                    st.error(f"Error: {ec}")
+                    
                     
