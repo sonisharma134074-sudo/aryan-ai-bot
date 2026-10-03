@@ -29,11 +29,12 @@ st.markdown("""
 # (Inverted commas "" ke andar apni key paste kar dena)
 # Iske baad kisi bhi dost ko API key nahi dalni padegi!
 # =========================================================
-API_KEY ="AQ.Ab8RN6JxPR-txady3VRc_Ix4yzzX6VZCTsuSW_tE0NupDrIJqQ"
+API_KEY = "YAHAN_APNI_ASLI_GOOGLE_API_KEY_PASTE_KAR_DENA"
 
 try:
     genai.configure(api_key=API_KEY)
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    model = genai.GenerativeModel('gemini-pro')
+    vision_model = genai.GenerativeModel('gemini-pro-vision')
 except Exception as e:
     st.error(f"Configuration Error: {e}")
 
@@ -93,11 +94,12 @@ else:
         if st.button("🔍 Analyze and Solve Photo", type="primary"):
             with st.spinner("👀 Reading photo and generating solution in Hindi..."):
                 try:
-                    response = model.generate_content([image, image_prompt])
+                    response = vision_model.generate_content([image, image_prompt])
                     st.markdown("### 📝 Detailed Solution (विस्तृत समाधान):")
                     st.markdown(response.text)
                 except Exception as ec:
                     st.error(f"Error: {ec}")
+                    
                     
                     
                     
