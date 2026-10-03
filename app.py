@@ -1,5 +1,5 @@
 import streamlit as st
-from google import genai
+import google.generativeai as genai
 from PIL import Image
 
 # Page Configuration
@@ -24,11 +24,12 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Pre-configured API Key
-API_KEY = "AQ.Ab8RN6JNWB6wPyrGKbZF6N4PTIrJ6OKgNtMVPsNduwhUGK419A"
+# Pre-configured Final API Key
+API_KEY = "AQ.Ab8RN6L9FW1ObBqWrhaQ0JHmcbVQaZg8o2LBnLlNIROA9gVvRA"
 
 try:
-    client = genai.Client(api_key=API_KEY)
+    genai.configure(api_key=API_KEY)
+    model = genai.GenerativeModel('gemini-1.5-flash')
 except Exception as e:
     st.error(f"API Key initialization error: {e}")
     st.stop()
@@ -66,10 +67,7 @@ if option == "✍️ लिखकर / टाइप करके सवाल �
                         "Provide a very detailed, comprehensive, step-by-step long answer in Hindi "
                         "for the following student query: " + user_query
                     )
-                    response = client.models.generate_content(
-                        model='gemini-2.5-flash',
-                        contents=prompt_text
-                    )
+                    response = model.generate_content(prompt_text)
                     st.markdown("### 📝 विस्तृत उत्तर (Detailed Answer):")
                     st.markdown(response.text)
                 except Exception as e:
@@ -92,17 +90,9 @@ else:
         if st.button("🔍 फोटो का विश्लेषण और समाधान करें", type="primary"):
             with st.spinner("👀 फोटो को पढ़ा जा रहा है और समाधान तैयार हो रहा है..."):
                 try:
-                    response = client.models.generate_content(
-                        model='gemini-2.5-flash',
-                        contents=[image, image_prompt]
-                    )
+                    response = model.generate_content([image, image_prompt])
                     st.markdown("### 📝 विस्तृत समाधान (Detailed Solution):")
                     st.markdown(response.text)
                 except Exception as e:
                     st.error(f"त्रुटि (Error): {e}")
                     
-      
-      
-      
-        
-        
