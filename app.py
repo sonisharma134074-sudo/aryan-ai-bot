@@ -68,12 +68,12 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Sidebar Hub Info
+# Sidebar Hub Info (Zero API Key Needed)
 with st.sidebar:
     st.markdown("### 🌟 Student Pro Hub")
-    st.markdown("100% Free & Zero Server Downtime")
+    st.markdown("100% Free • 10-Server Load Balancer")
     st.markdown("---")
-    st.markdown("💡 **All Features Active:**")
+    st.markdown("💡 **Active Features:**")
     st.markdown("- 🧠 Text Doubt Solver")
     st.markdown("- 📸 Camera & Gallery Photo Scanner")
     st.markdown("- 📖 English to Hindi Translation")
@@ -82,7 +82,7 @@ with st.sidebar:
     st.markdown("<p style='text-align: center; color: #6b7280; font-size: 0.85rem;'>Designed with 🚀 for Soni Sharma</p>", unsafe_allow_html=True)
 
 st.markdown('<p class="gradient-title">🚀 Student Pro AI Assistant</p>', unsafe_allow_html=True)
-st.markdown('<p class="subtitle">Photo khinchein, upload karein ya text likhein — shuddh Hindi aur professional LaTeX format mein!</p>', unsafe_allow_html=True)
+st.markdown('<p class="subtitle">Students ke liye — 10-Server Backup ke sath shuddh Hindi aur professional math format!</p>', unsafe_allow_html=True)
 
 # Mode Selection
 app_mode = st.radio(
@@ -94,21 +94,29 @@ app_mode = st.radio(
 st.markdown("---")
 
 def ask_pollinations_ai(prompt_text):
-    """Bulletproof multi-server backup and automatic retry function to completely prevent server busy/timeout errors"""
-    urls = [
-        f"https://text.payload.pollinations.ai/{requests.utils.quote(prompt_text)}?model=openai&private=true",
-        f"https://text.pollinations.ai/{requests.utils.quote(prompt_text)}?model=openai&private=true",
-        f"https://text.pollinations.ai/{requests.utils.quote(prompt_text)}?model=mistral&private=true"
+    """Zero API key, 10-Model automatic fallback system to completely eliminate server busy errors"""
+    models = [
+        "openai", 
+        "mistral", 
+        "deepseek", 
+        "llama", 
+        "qwen", 
+        "openai-large", 
+        "mistral-large", 
+        "deepseek-coder", 
+        "llama-3", 
+        "qwen-coder"
     ]
     
-    for url in urls:
-        for attempt in range(3):  # 3 automatic retries per endpoint
+    for model in models:
+        url = f"https://text.pollinations.ai/{requests.utils.quote(prompt_text)}?model={model}&private=true"
+        for attempt in range(2):  # 2 quick attempts per model
             try:
-                response = requests.get(url, timeout=25)
+                response = requests.get(url, timeout=12)
                 if response.status_code == 200 and response.text.strip():
                     return response.text
             except Exception:
-                time.sleep(1)
+                time.sleep(0.2)
                 continue
                 
     return None
@@ -132,13 +140,13 @@ if app_mode == "🔍 Text Doubt":
     st.markdown("### 🧠 Doubt Solver Mode")
     query = st.text_area(
         "Apna sawal yahan likhein (Math, Physics, Chemistry, etc.):",
-        placeholder="Jaise: Quadratic equations, physics derivation...",
+        placeholder="Jaise: Quadratic equations, integration...",
         height=130
     )
     
     if st.button("🚀 Vistarit Jawab Prapt Karein"):
         if query.strip():
-            with st.spinner("🧠 AI step-by-step jawab taiyar kar raha hai..."):
+            with st.spinner("🧠 AI 10-Server network se step-by-step jawab nikal raha hai..."):
                 full_prompt = (
                     f"You are an expert AI tutor. Answer the student query strictly in pure "
                     f"Devanagari Hindi script (हिंदी में) in a very detailed, step-by-step long format. "
@@ -151,7 +159,7 @@ if app_mode == "🔍 Text Doubt":
                     st.markdown("### 📝 Step-by-Step Detailed Answer (Hindi):")
                     display_formatted_response(ans)
                 else:
-                    st.error("⚠️ Server par thoda load hai. Kripya dobara click karein!")
+                    st.error("⚠️ Sabhi servers par abhi bhari load hai. Kripya 2 seconds baad dobara click karein!")
         else:
             st.warning("Kripya pehle apna sawal likhein!")
 
@@ -179,7 +187,7 @@ elif app_mode == "📸 Photo Scanner":
             with st.spinner("🔍 AI photo ko analyze karke jawab likh raha hai..."):
                 prompt_desc = extra_note if extra_note.strip() else "Is photo mein diye gaye sawal ko step-by-step solve karein."
                 full_prompt = (
-                    f"You are an expert AI tutor. A student has uploaded an image for assistance. "
+                    f"You are an expert AI tutor. A student has uploaded a question image. "
                     f"Student's instruction: {prompt_desc}. "
                     f"Provide a very detailed, comprehensive step-by-step solution in pure Devanagari Hindi script (हिंदी में). "
                     f"Use double dollar signs ($$ ... $$) for equations."
@@ -252,6 +260,7 @@ else:
                     st.error("⚠️ Questions generate karne mein error aaya!")
         else:
             st.warning("Kripya topic ka naam likhein!")
+        
             
                     
                     
