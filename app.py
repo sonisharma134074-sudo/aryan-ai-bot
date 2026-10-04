@@ -38,39 +38,40 @@ query = st.text_area(
 
 if st.button("🚀 Vistarit Jawab Prapt Karein", type="primary"):
     if query.strip():
-        with st.spinner("🧠 AI server se connect ho raha hai, kripya thoda intezaar karein..."):
-            try:
-                full_prompt = (
-                    f"You are an expert AI tutor. You MUST answer the following student query strictly in pure "
-                    f"Devanagari Hindi script (हिंदी में) in a very detailed, comprehensive, step-by-step long format. "
-                    f"CRITICAL REQUIREMENT for Math/Science: For all mathematical equations, formulas, and variables, "
-                    f"use standard Markdown math notation with double dollar signs ($$ ... $$) for standalone display "
-                    f"equations and single dollar signs ($ ... $) for inline equations so they render correctly. "
-                    f"Do not write explanations in English. Student Query: {query}"
-                )
-                encoded_prompt = urllib.parse.quote(full_prompt)
-                url = f"https://text.pollinations.ai/{encoded_prompt}"
-                
-                # Auto-retry loop (3 koshishein agar server busy ho)
-                response = None
-                for attempt in range(3):
-                    try:
-                        response = requests.get(url, timeout=40)
-                        if response.status_code == 200 and response.text.strip():
-                            break
-                    except requests.exceptions.RequestException:
-                        pass
-                    time.sleep(2) # 2 second wait karke dobara try karega
-                
-                if response and response.status_code == 200 and response.text.strip():
-                    st.markdown("### 📝 Step-by-Step Detailed Answer (Hindi):")
-                    st.markdown(response.text)
-                else:
-                    st.error("Server abhi bohot zyada busy hai. Kripya 10-15 sekund baad dobara button dabayein!")
-            except Exception as e:
-                st.error(f"Connection Error: {e}")
+        with st.spinner("🧠 AI smart servers se connect ho raha hai..."):
+            full_prompt = (
+                f"You are an expert AI tutor. You MUST answer the following student query strictly in pure "
+                f"Devanagari Hindi script (हिंदी में) in a very detailed, comprehensive, step-by-step long format. "
+                f"CRITICAL REQUIREMENT for Math/Science: For all mathematical equations, formulas, and variables, "
+                f"use standard Markdown math notation with double dollar signs ($$ ... $$) for standalone display "
+                f"equations and single dollar signs ($ ... $) for inline equations so they render correctly. "
+                f"Do not write explanations in English. Student Query: {query}"
+            )
+            encoded_prompt = urllib.parse.quote(full_prompt)
+            
+            # Alag-alag free AI models ki list (Agar ek busy ho, toh doosra automatic kaam karega)
+            models = ["openai", "mistral", "deepseek"]
+            response_text = None
+            
+            for model in models:
+                url = f"https://text.pollinations.ai/{encoded_prompt}?model={model}"
+                try:
+                    res = requests.get(url, timeout=25)
+                    if res.status_code == 200 and res.text.strip():
+                        response_text = res.text
+                        break
+                except Exception:
+                    pass
+                time.sleep(1)
+            
+            if response_text:
+                st.markdown("### 📝 Step-by-Step Detailed Answer (Hindi):")
+                st.markdown(response_text)
+            else:
+                st.error("Abhi sabhi free servers par thoda heavy traffic hai. Kripya 10 sekund rukh kar dobara button dabayein!")
     else:
         st.warning("Kripya pehle apna sawal likhein!")
+        
         
         
         
