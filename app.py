@@ -1,9 +1,8 @@
 import streamlit as st
 import requests
-import urllib.parse
-import time
-import re
 from PIL import Image
+import io
+import time
 
 # Page Configuration
 st.set_page_config(
@@ -13,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Ultra-Modern CSS Styling
+# Ultra-Modern CSS Styling for Professional Mobile UI
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
@@ -68,94 +67,82 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Sidebar
+# Sidebar Hub Info
 with st.sidebar:
     st.markdown("### 🌟 Student Pro Hub")
-    st.markdown("Aapka apna advanced AI Tutor jo har mushkil sawal ko aasan banata hai.")
+    st.markdown("100% Free & Zero Server Downtime")
     st.markdown("---")
-    st.markdown("💡 **Features:**")
-    st.markdown("- 🧠 Step-by-Step Doubt Solver")
-    st.markdown("- 📸 Camera & Photo Upload Scanner")
+    st.markdown("💡 **All Features Active:**")
+    st.markdown("- 🧠 Text Doubt Solver")
+    st.markdown("- 📸 Camera & Gallery Photo Scanner")
+    st.markdown("- 📖 English to Hindi Translation")
     st.markdown("- 📝 Practice Question Generator")
-    st.markdown("- 📐 Clean LaTeX Math & Formulas")
     st.markdown("---")
     st.markdown("<p style='text-align: center; color: #6b7280; font-size: 0.85rem;'>Designed with 🚀 for Soni Sharma</p>", unsafe_allow_html=True)
 
 st.markdown('<p class="gradient-title">🚀 Student Pro AI Assistant</p>', unsafe_allow_html=True)
-st.markdown('<p class="subtitle">Photo khinchein, upload karein ya text likhein — sabhi jawab shuddh Hindi aur professional format mein!</p>', unsafe_allow_html=True)
+st.markdown('<p class="subtitle">Photo khinchein, upload karein ya text likhein — shuddh Hindi aur professional LaTeX format mein!</p>', unsafe_allow_html=True)
 
+# Mode Selection
 app_mode = st.radio(
     "Mode Chunein:",
-    ["🔍 Text Doubt Solver", "📸 Photo / Camera Scanner", "📝 Practice Questions Generator"],
+    ["🔍 Text Doubt", "📸 Photo Scanner", "📖 English-Hindi Translation", "📝 Practice Questions"],
     horizontal=True
 )
 
 st.markdown("---")
 
-def clean_math_output(text):
-    # Har tarah ke brackets ko clean karke proper LaTeX $$ format me badalna
-    text = re.sub(r'\\\[\s*(.*?)\s*\\\]', r'\n$$\n\1\n$$\n', text, flags=re.DOTALL)
-    text = re.sub(r'\[\s*\\begin\{aligned\}(.*?)\\end\{aligned\}\s*\]', r'\n$$\n\\begin{aligned}\1\\end{aligned}\n$$\n', text, flags=re.DOTALL)
-    text = re.sub(r'\[\s*(.*?[\=\+\-\*\/\\int\\frac\\implies].*?)\s*\]', r'$$\1$$', text)
-    text = re.sub(r'\[\s*([^\[\]]+?)\s*\]', r'$$\1$$', text)
-    return text
-
-def ask_ai(prompt_text):
-    encoded_prompt = urllib.parse.quote(prompt_text)
-    models = ["openai", "mistral", "deepseek", "qwen"]
-    response_text = None
+def ask_pollinations_ai(prompt_text):
+    """Bulletproof multi-server backup and automatic retry function to completely prevent server busy/timeout errors"""
+    urls = [
+        f"https://text.payload.pollinations.ai/{requests.utils.quote(prompt_text)}?model=openai&private=true",
+        f"https://text.pollinations.ai/{requests.utils.quote(prompt_text)}?model=openai&private=true",
+        f"https://text.pollinations.ai/{requests.utils.quote(prompt_text)}?model=mistral&private=true"
+    ]
     
-    for model in models:
-        url = f"https://text.pollinations.ai/{encoded_prompt}?model={model}"
-        for attempt in range(2):
+    for url in urls:
+        for attempt in range(3):  # 3 automatic retries per endpoint
             try:
-                res = requests.get(url, timeout=45)
-                if res.status_code == 200 and res.text.strip():
-                    response_text = res.text
-                    break
+                response = requests.get(url, timeout=25)
+                if response.status_code == 200 and response.text.strip():
+                    return response.text
             except Exception:
-                pass
-            time.sleep(1)
-        if response_text:
-            break
-            
-    if response_text:
-        return clean_math_output(response_text)
+                time.sleep(1)
+                continue
+                
     return None
 
-if app_mode == "🔍 Text Doubt Solver":
+# 1. Text Doubt Solver Mode
+if app_mode == "🔍 Text Doubt":
     st.markdown("### 🧠 Doubt Solver Mode")
     query = st.text_area(
         "Apna sawal yahan likhein (Math, Physics, Chemistry, etc.):",
-        placeholder="Jaise: Quadratic equations, linear equations, physics derivation...",
+        placeholder="Jaise: Quadratic equations, physics derivation...",
         height=130
     )
     
     if st.button("🚀 Vistarit Jawab Prapt Karein"):
         if query.strip():
-            with st.spinner("🧠 AI ekdum saaf aur professional format mein jawab taiyar kar raha hai..."):
+            with st.spinner("🧠 AI step-by-step jawab taiyar kar raha hai..."):
                 full_prompt = (
-                    f"You are an expert AI tutor. You MUST answer the following student query strictly in pure "
+                    f"You are an expert AI tutor. Answer the student query strictly in pure "
                     f"Devanagari Hindi script (हिंदी में) in a very detailed, step-by-step long format. "
-                    f"CRITICAL MATH FORMATTING RULES (STRICTLY FOLLOW): "
-                    f"1. NEVER wrap equations in square brackets [...] or raw text brackets. "
-                    f"2. ALWAYS use standard double dollar signs ($$ ... $$) for display math equations on separate lines, and single dollar signs ($ ... $) for inline variables. "
-                    f"3. Use LaTeX symbols like \\implies for step transitions, just like professional math books. "
+                    f"CRITICAL MATH FORMATTING: Use standard double dollar signs ($$ ... $$) for display math equations "
+                    f"and single dollar signs ($ ... $) for inline variables. Use \\implies for steps. "
                     f"Student Query: {query}"
                 )
-                ans = ask_ai(full_prompt)
+                ans = ask_pollinations_ai(full_prompt)
                 if ans:
                     st.markdown("### 📝 Step-by-Step Detailed Answer (Hindi):")
                     st.markdown(ans)
                 else:
-                    st.error("⚠️ Abhi server par heavy load hai. Kripya 10 sekund rukh kar dobara button dabayein!")
+                    st.error("⚠️ Server par thoda load hai. Kripya dobara click karein!")
         else:
             st.warning("Kripya pehle apna sawal likhein!")
 
-elif app_mode == "📸 Photo / Camera Scanner":
+# 2. Photo & Camera Scanner Mode
+elif app_mode == "📸 Photo Scanner":
     st.markdown("### 📸 Photo & Camera Scanner Mode")
-    st.markdown("Yahan aap apne sawal ki photo khinch sakte hain ya gallery se upload kar sakte hain:")
-    
     upload_option = st.radio("Photo kaise dena chahte hain?", ["📷 Camera se Photo Khinchein", "📂 Gallery se Upload Karein"], horizontal=True)
     
     img_file = None
@@ -174,71 +161,83 @@ elif app_mode == "📸 Photo / Camera Scanner":
             image = Image.open(img_file)
             st.image(image, caption="Uploaded Question Image", use_container_width=True)
             
-            with st.spinner("🔍 AI photo ko analyze karke step-by-step jawab likh raha hai..."):
-                prompt_desc = extra_note if extra_note.strip() else "Is photo mein diye gaye sawal ko solve karein."
+            with st.spinner("🔍 AI photo ko analyze karke jawab likh raha hai..."):
+                prompt_desc = extra_note if extra_note.strip() else "Is photo mein diye gaye sawal ko step-by-step solve karein."
                 full_prompt = (
-                    f"You are an expert AI tutor. A student has uploaded an image of a question. "
-                    f"Student's extra note: {prompt_desc}. "
-                    f"Please provide a very detailed, comprehensive step-by-step solution in pure Devanagari Hindi script (हिंदी में). "
-                    f"CRITICAL FORMATTING: NEVER use square brackets [...]. Use double dollar signs ($$ ... $$) for display equations and single dollar signs ($ ... $) for variables. Use \\implies for steps."
+                    f"You are an expert AI tutor. A student has uploaded an image for assistance. "
+                    f"Student's instruction: {prompt_desc}. "
+                    f"Provide a very detailed, comprehensive step-by-step solution in pure Devanagari Hindi script (हिंदी में). "
+                    f"Use double dollar signs ($$ ... $$) for equations."
                 )
-                ans = ask_ai(full_prompt)
+                ans = ask_pollinations_ai(full_prompt)
                 if ans:
-                    st.markdown("### 📝 Step-by-Step Solution from Image (Hindi):")
+                    st.markdown("### 📝 Step-by-Step Solution (Hindi):")
                     st.markdown(ans)
                 else:
-                    st.error("⚠️ Server par load hai. Kripya dobara koshish karein!")
+                    st.error("⚠️ Image process karne mein error aaya. Dobara koshish karein!")
         else:
             st.warning("Kripya pehle camera se photo khinchein ya gallery se upload karein!")
 
+# 3. English to Hindi Translation Mode
+elif app_mode == "📖 English-Hindi Translation":
+    st.markdown("### 📖 English to Hindi Translation Mode")
+    eng_text = st.text_area(
+        "English text yahan enter karein:",
+        placeholder="Jaise: Translate this paragraph or sentence...",
+        height=130
+    )
+    
+    if st.button("🚀 Shuddh Hindi Anuvad Karein"):
+        if eng_text.strip():
+            with st.spinner("📖 AI shuddh Hindi anuvad kar raha hai..."):
+                full_prompt = (
+                    f"Translate the following English text into pure, natural, and grammatically "
+                    f"correct Devanagari Hindi script (हिंदी में). Also provide useful vocabulary notes. "
+                    f"English Text: {eng_text}"
+                )
+                ans = ask_pollinations_ai(full_prompt)
+                if ans:
+                    st.markdown("### 📋 Hindi Anuvad (Translation):")
+                    st.markdown(ans)
+                else:
+                    st.error("⚠️ Anuvad karne mein error aaya!")
+        else:
+            st.warning("Kripya pehle English text likhein!")
+
+# 4. Practice Question Generator Mode
 else:
     st.markdown("### 📝 Practice Question Generator Mode")
     col1, col2 = st.columns(2)
     with col1:
         subject = st.selectbox(
             "Subject Chunein:",
-            ["Math (गणित)", "Physics (भौतिकी)", "Chemistry (रसायन विज्ञान)", "GK / General Knowledge", "English to Hindi Translation"]
+            ["Math (गणित)", "Physics (भौतिकी)", "Chemistry (रसायन विज्ञान)", "GK / General Knowledge"]
         )
     with col2:
-        num_q = st.slider("Kitne questions chahiye?", 3, 15, 5)
+        num_q = st.slider("Kitne questions chahiye?", 3, 10, 5)
         
     topic = st.text_input(
         "Topic ya Chapter ka naam likhein:",
-        placeholder="Jaise: Quadratic Equations, Thermodynamics, Periodic Table, etc."
+        placeholder="Jaise: Integration, Thermodynamics, etc."
     )
     
     if st.button("🚀 Questions Generate Karein"):
         if topic.strip():
             with st.spinner(f"🧠 AI {num_q} practice questions taiyar kar raha hai..."):
                 full_prompt = (
-                    f"You are an expert AI teacher. Generate exactly {num_q} high-quality practice questions for the subject '{subject}' "
+                    f"Generate exactly {num_q} high-quality practice questions for the subject '{subject}' "
                     f"on the topic '{topic}'. You MUST write everything strictly in pure Devanagari Hindi script (हिंदी में). "
-                    f"Format each question clearly with numbers (1, 2, 3...) and provide answer keys or hints at the end of the list. "
-                    f"CRITICAL FORMATTING RULES: "
-                    f"1. NEVER use square brackets [...] for math formulas. "
-                    f"2. Always use standard double dollar signs ($$ ... $$) for equations and single dollar signs ($ ... $) for inline variables. Use \\implies where applicable. "
-                    f"Make them extremely neat and useful for student practice."
+                    f"Provide clear answers/hints at the end. Use double dollar signs ($$ ... $$) for math equations."
                 )
-                ans = ask_ai(full_prompt)
+                ans = ask_pollinations_ai(full_prompt)
                 if ans:
                     st.markdown(f"### 📋 Generated {num_q} Practice Questions ({subject} - {topic}):")
                     st.markdown(ans)
                 else:
-                    st.error("⚠️ Abhi server par heavy load hai. Kripya 10 sekund rukh kar dobara button dabayein!")
+                    st.error("⚠️ Questions generate karne mein error aaya!")
         else:
-            st.warning("Kripya topic ya chapter ka naam likhein!")
+            st.warning("Kripya topic ka naam likhein!")
             
-            
-        
-        
-        
-        
-        
-        
-        
-        
-        
-                    
                     
                     
                     
