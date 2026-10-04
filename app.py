@@ -38,7 +38,7 @@ query = st.text_area(
 
 if st.button("🚀 Vistarit Jawab Prapt Karein", type="primary"):
     if query.strip():
-        with st.spinner("🧠 AI smart servers se connect ho raha hai..."):
+        with st.spinner("🧠 Server par traffic hai, AI connect hone ki koshish kar raha hai..."):
             full_prompt = (
                 f"You are an expert AI tutor. You MUST answer the following student query strictly in pure "
                 f"Devanagari Hindi script (हिंदी में) in a very detailed, comprehensive, step-by-step long format. "
@@ -49,28 +49,32 @@ if st.button("🚀 Vistarit Jawab Prapt Karein", type="primary"):
             )
             encoded_prompt = urllib.parse.quote(full_prompt)
             
-            # Alag-alag free AI models ki list (Agar ek busy ho, toh doosra automatic kaam karega)
-            models = ["openai", "mistral", "deepseek"]
+            # Alag-alag free AI models ki list
+            models = ["openai", "mistral", "deepseek", "qwen"]
             response_text = None
             
             for model in models:
                 url = f"https://text.pollinations.ai/{encoded_prompt}?model={model}"
-                try:
-                    res = requests.get(url, timeout=25)
-                    if res.status_code == 200 and res.text.strip():
-                        response_text = res.text
-                        break
-                except Exception:
-                    pass
-                time.sleep(1)
+                for attempt in range(2): # Har model par 2 baar try karega
+                    try:
+                        res = requests.get(url, timeout=40)
+                        if res.status_code == 200 and res.text.strip():
+                            response_text = res.text
+                            break
+                    except Exception:
+                        pass
+                    time.sleep(2)
+                if response_text:
+                    break
             
             if response_text:
                 st.markdown("### 📝 Step-by-Step Detailed Answer (Hindi):")
                 st.markdown(response_text)
             else:
-                st.error("Abhi sabhi free servers par thoda heavy traffic hai. Kripya 10 sekund rukh kar dobara button dabayein!")
+                st.error("⚠️ Abhi server par kafi heavy load hai. Kripya 10-15 sekund intezaar karke dobara button par click karein!")
     else:
         st.warning("Kripya pehle apna sawal likhein!")
+        
         
         
         
