@@ -71,30 +71,39 @@ st.markdown("""
 # Sidebar Hub Info (Zero API Key Needed)
 with st.sidebar:
     st.markdown("### 🌟 Student Pro Hub")
-    st.markdown("100% Free • 10-Server Load Balancer")
+    st.markdown("100% Free • 10-Server + Notes & Images")
     st.markdown("---")
     st.markdown("💡 **Active Features:**")
     st.markdown("- 🧠 Text Doubt Solver")
     st.markdown("- 📸 Camera & Gallery Photo Scanner")
+    st.markdown("- 📚 Subject Important Notes (Hist/Bio/Geo)")
+    st.markdown("- 🎨 AI Image & Diagram Generator")
     st.markdown("- 📖 English to Hindi Translation")
     st.markdown("- 📝 Practice Question Generator")
     st.markdown("---")
     st.markdown("<p style='text-align: center; color: #6b7280; font-size: 0.85rem;'>Designed with 🚀 for Soni Sharma</p>", unsafe_allow_html=True)
 
 st.markdown('<p class="gradient-title">🚀 Student Pro AI Assistant</p>', unsafe_allow_html=True)
-st.markdown('<p class="subtitle">Students ke liye — 10-Server Backup ke sath shuddh Hindi aur professional math format!</p>', unsafe_allow_html=True)
+st.markdown('<p class="subtitle">Students ke liye — Notes, Diagrams, aur 10-Server Backup ke sath shuddh Hindi!</p>', unsafe_allow_html=True)
 
-# Mode Selection
+# Mode Selection (Expanded with Notes & Image Generation)
 app_mode = st.radio(
     "Mode Chunein:",
-    ["🔍 Text Doubt", "📸 Photo Scanner", "📖 English-Hindi Translation", "📝 Practice Questions"],
+    [
+        "🔍 Text Doubt", 
+        "📸 Photo Scanner", 
+        "📚 Important Notes", 
+        "🎨 AI Diagram Generator", 
+        "📖 Translation", 
+        "📝 Practice Qs"
+    ],
     horizontal=True
 )
 
 st.markdown("---")
 
 def ask_pollinations_ai(prompt_text):
-    """Zero API key, 10-Model automatic fallback system to completely eliminate server busy errors"""
+    """Zero API key, 10-Model automatic fallback with auto-wait & retry system"""
     models = [
         "openai", 
         "mistral", 
@@ -108,16 +117,16 @@ def ask_pollinations_ai(prompt_text):
         "qwen-coder"
     ]
     
-    for model in models:
-        url = f"https://text.pollinations.ai/{requests.utils.quote(prompt_text)}?model={model}&private=true"
-        for attempt in range(2):  # 2 quick attempts per model
+    for cycle in range(2):
+        for model in models:
+            url = f"https://text.pollinations.ai/{requests.utils.quote(prompt_text)}?model={model}&private=true"
             try:
-                response = requests.get(url, timeout=12)
+                response = requests.get(url, timeout=15)
                 if response.status_code == 200 and response.text.strip():
                     return response.text
             except Exception:
-                time.sleep(0.2)
                 continue
+        time.sleep(1)
                 
     return None
 
@@ -126,7 +135,6 @@ def display_formatted_response(raw_text):
     if not raw_text:
         return
     
-    # Clean up raw brackets into proper LaTeX display blocks
     text = re.sub(r'\\\[(.*?)\\\]', r'$$\1$$', raw_text, flags=re.DOTALL)
     text = re.sub(r'\[\s*(\\begin\{aligned\}.*?\\end\{aligned\})\s*\]', r'$$\1$$', text, flags=re.DOTALL)
     text = re.sub(r'\[\s*(\\begin\{matrix\}.*?\\end\{matrix\})\s*\]', r'$$\1$$', text, flags=re.DOTALL)
@@ -201,8 +209,67 @@ elif app_mode == "📸 Photo Scanner":
         else:
             st.warning("Kripya pehle camera se photo khinchein ya gallery se upload karein!")
 
-# 3. English to Hindi Translation Mode
-elif app_mode == "📖 English-Hindi Translation":
+# 3. Important Notes Generator Mode (History, Bio, Geo, etc.)
+elif app_mode == "📚 Important Notes":
+    st.markdown("### 📚 Subject Important Notes & Key Points Generator")
+    col1, col2 = st.columns(2)
+    with col1:
+        subj_choice = st.selectbox(
+            "Subject Chunein:",
+            ["History (इतिहास)", "Biology (जीव विज्ञान)", "Geography (भूगोल)", "Physics (भौतिकी)", "Chemistry (रसायन)", "Pol Science (राजनीति विज्ञान)"]
+        )
+    with col2:
+        note_type = st.selectbox(
+            "Notes ka Format:",
+            ["Important Points & Summary", "Key Dates & Events", "Important Definitions", "Exam Revision Cheat Sheet"]
+        )
+        
+    chapter_topic = st.text_input(
+        "Chapter ya Topic ka naam likhein:",
+        placeholder="Jaise: The French Revolution, Photosynthesis, Solar System..."
+    )
+    
+    if st.button("🚀 Important Notes Generate Karein"):
+        if chapter_topic.strip():
+            with st.spinner(f"📚 AI {subj_choice} ke liye important notes taiyar kar raha hai..."):
+                full_prompt = (
+                    f"You are an expert professor. Generate comprehensive, high-yield examination notes, "
+                    f"important key points, definitions, and highlights for the subject '{subj_choice}' on the topic '{chapter_topic}'. "
+                    f"Format type: '{note_type}'. "
+                    f"You MUST write everything strictly in pure Devanagari Hindi script (हिंदी में) using clean bullet points and bold headings."
+                )
+                ans = ask_pollinations_ai(full_prompt)
+                if ans:
+                    st.markdown(f"### 📋 Important Notes ({subj_choice} - {chapter_topic}):")
+                    display_formatted_response(ans)
+                else:
+                    st.error("⚠️ Notes generate karne mein error aaya! Dobara koshish karein.")
+        else:
+            st.warning("Kripya chapter ya topic ka naam likhein!")
+
+# 4. AI Image & Diagram Generator Mode
+elif app_mode == "🎨 AI Diagram Generator":
+    st.markdown("### 🎨 AI Educational Diagram & Image Generator")
+    st.markdown("Pankh, cell structure, map concept, ya kisi bhi scientific/historical scene ka description likhein:")
+    
+    img_query = st.text_input(
+        "Image ya Diagram ka description English mein likhein (Best results ke liye):",
+        placeholder="Jaise: Plant cell structure diagram labeled educational, or Solar system planets..."
+    )
+    
+    if st.button("🚀 Diagram / Image Generate Karein"):
+        if img_query.strip():
+            with st.spinner("🎨 AI educational image generate kar raha hai..."):
+                encoded_prompt = requests.utils.quote(img_query + ", educational diagram, clean vector style, high quality")
+                image_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width=800&height=600&nologo=true"
+                
+                st.image(image_url, caption=f"Generated AI Diagram: {img_query}", use_container_width=True)
+                st.success("✅ Aapka diagram taiyar hai! Students ise save karke padhai mein use kar sakte hain.")
+        else:
+            st.warning("Kripya description likhein!")
+
+# 5. English to Hindi Translation Mode
+elif app_mode == "📖 Translation":
     st.markdown("### 📖 English to Hindi Translation Mode")
     eng_text = st.text_area(
         "English text yahan enter karein:",
@@ -227,21 +294,21 @@ elif app_mode == "📖 English-Hindi Translation":
         else:
             st.warning("Kripya pehle English text likhein!")
 
-# 4. Practice Question Generator Mode
+# 6. Practice Question Generator Mode
 else:
     st.markdown("### 📝 Practice Question Generator Mode")
     col1, col2 = st.columns(2)
     with col1:
         subject = st.selectbox(
             "Subject Chunein:",
-            ["Math (गणित)", "Physics (भौतिकी)", "Chemistry (रसायन विज्ञान)", "GK / General Knowledge"]
+            ["Math (गणित)", "Physics (भौतिकी)", "Chemistry (रसायन विज्ञान)", "Biology (जीव विज्ञान)", "History (इतिहास)", "Geography (भूगोल)"]
         )
     with col2:
         num_q = st.slider("Kitne questions chahiye?", 3, 10, 5)
         
     topic = st.text_input(
         "Topic ya Chapter ka naam likhein:",
-        placeholder="Jaise: Integration, Thermodynamics, etc."
+        placeholder="Jaise: Integration, Cell Division, Nationalism in India..."
     )
     
     if st.button("🚀 Questions Generate Karein"):
@@ -260,6 +327,7 @@ else:
                     st.error("⚠️ Questions generate karne mein error aaya!")
         else:
             st.warning("Kripya topic ka naam likhein!")
+                
         
             
                     
