@@ -38,13 +38,15 @@ query = st.text_area(
 
 if st.button("🚀 Vistarit Jawab Prapt Karein", type="primary"):
     if query.strip():
-        with st.spinner("🧠 Server par traffic hai, AI connect hone ki koshish kar raha hai..."):
+        with st.spinner("🧠 AI step-by-step aur saaf-suthra jawab taiyar kar raha hai..."):
+            # Strict formatting prompt taaki equations aur steps bilkul clean aayein
             full_prompt = (
                 f"You are an expert AI tutor. You MUST answer the following student query strictly in pure "
                 f"Devanagari Hindi script (हिंदी में) in a very detailed, comprehensive, step-by-step long format. "
-                f"CRITICAL REQUIREMENT for Math/Science: For all mathematical equations, formulas, and variables, "
-                f"use standard Markdown math notation with double dollar signs ($$ ... $$) for standalone display "
-                f"equations and single dollar signs ($ ... $) for inline equations so they render correctly. "
+                f"CRITICAL FORMATTING RULES: "
+                f"1. NEVER use square brackets like [...] for math equations. "
+                f"2. ALWAYS use double dollar signs ($$ ... $$) for standalone display equations and single dollar signs ($ ... $) for inline variables. "
+                f"3. Write each step clearly on a new line with proper spacing, bullet points, and clean explanations, just like a professional teacher. "
                 f"Do not write explanations in English. Student Query: {query}"
             )
             encoded_prompt = urllib.parse.quote(full_prompt)
@@ -55,7 +57,7 @@ if st.button("🚀 Vistarit Jawab Prapt Karein", type="primary"):
             
             for model in models:
                 url = f"https://text.pollinations.ai/{encoded_prompt}?model={model}"
-                for attempt in range(2): # Har model par 2 baar try karega
+                for attempt in range(2):
                     try:
                         res = requests.get(url, timeout=40)
                         if res.status_code == 200 and res.text.strip():
@@ -71,9 +73,10 @@ if st.button("🚀 Vistarit Jawab Prapt Karein", type="primary"):
                 st.markdown("### 📝 Step-by-Step Detailed Answer (Hindi):")
                 st.markdown(response_text)
             else:
-                st.error("⚠️ Abhi server par kafi heavy load hai. Kripya 10-15 sekund intezaar karke dobara button par click karein!")
+                st.error("⚠️ Abhi server par heavy load hai. Kripya 10 sekund intezaar karke dobara button par click karein!")
     else:
         st.warning("Kripya pehle apna sawal likhein!")
+        
         
         
         
