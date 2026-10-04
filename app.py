@@ -3,6 +3,7 @@ import requests
 from PIL import Image
 import io
 import time
+import re
 
 # Page Configuration
 st.set_page_config(
@@ -112,6 +113,20 @@ def ask_pollinations_ai(prompt_text):
                 
     return None
 
+def display_formatted_response(raw_text):
+    """Automatically cleans raw LaTeX brackets and renders professional math formulas"""
+    if not raw_text:
+        return
+    
+    # Clean up raw brackets into proper LaTeX display blocks
+    text = re.sub(r'\\\[(.*?)\\\]', r'$$\1$$', raw_text, flags=re.DOTALL)
+    text = re.sub(r'\[\s*(\\begin\{aligned\}.*?\\end\{aligned\})\s*\]', r'$$\1$$', text, flags=re.DOTALL)
+    text = re.sub(r'\[\s*(\\begin\{matrix\}.*?\\end\{matrix\})\s*\]', r'$$\1$$', text, flags=re.DOTALL)
+    text = re.sub(r'\\\((.*?)\\\)', r'$\1$', text, flags=re.DOTALL)
+    text = text.replace(r'(\implies)', r'$\implies$')
+    
+    st.markdown(text)
+
 # 1. Text Doubt Solver Mode
 if app_mode == "🔍 Text Doubt":
     st.markdown("### 🧠 Doubt Solver Mode")
@@ -134,7 +149,7 @@ if app_mode == "🔍 Text Doubt":
                 ans = ask_pollinations_ai(full_prompt)
                 if ans:
                     st.markdown("### 📝 Step-by-Step Detailed Answer (Hindi):")
-                    st.markdown(ans)
+                    display_formatted_response(ans)
                 else:
                     st.error("⚠️ Server par thoda load hai. Kripya dobara click karein!")
         else:
@@ -172,7 +187,7 @@ elif app_mode == "📸 Photo Scanner":
                 ans = ask_pollinations_ai(full_prompt)
                 if ans:
                     st.markdown("### 📝 Step-by-Step Solution (Hindi):")
-                    st.markdown(ans)
+                    display_formatted_response(ans)
                 else:
                     st.error("⚠️ Image process karne mein error aaya. Dobara koshish karein!")
         else:
@@ -198,7 +213,7 @@ elif app_mode == "📖 English-Hindi Translation":
                 ans = ask_pollinations_ai(full_prompt)
                 if ans:
                     st.markdown("### 📋 Hindi Anuvad (Translation):")
-                    st.markdown(ans)
+                    display_formatted_response(ans)
                 else:
                     st.error("⚠️ Anuvad karne mein error aaya!")
         else:
@@ -232,7 +247,7 @@ else:
                 ans = ask_pollinations_ai(full_prompt)
                 if ans:
                     st.markdown(f"### 📋 Generated {num_q} Practice Questions ({subject} - {topic}):")
-                    st.markdown(ans)
+                    display_formatted_response(ans)
                 else:
                     st.error("⚠️ Questions generate karne mein error aaya!")
         else:
